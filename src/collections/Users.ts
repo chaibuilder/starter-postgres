@@ -40,6 +40,11 @@ export const Users: CollectionConfig = {
     ],
   },
   auth: {
+    // API key auth powers the ChaiBuilder MCP endpoint (`/api/mcp`): an MCP client
+    // authenticates with `Authorization: users API-Key <key>` instead of a session
+    // cookie, so it acts with the issuing user's permissions. Enabling this adds the
+    // `enableAPIKey`, `apiKey` and `apiKeyIndex` columns (see the migration).
+    useAPIKey: true,
     forgotPassword: {
       expiration: 1000 * 60 * 60, // 1 hour
       generateEmailSubject: (args) =>
