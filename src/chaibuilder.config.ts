@@ -127,7 +127,12 @@ const chaiConfig: Readonly<ResolvedChaiBuilderServerConfig> = buildChaiBuilderCo
     // Exposes ChaiBuilder's built-in MCP tools (page, block, SEO, publishing,
     // revision, translation, asset and redirect operations) to AI agents. It does
     // nothing until the `/api/mcp` route is mounted. See src/app/(payload)/api/mcp.
-    mcpPlugin(),
+    // Preview links go through this app's own draft-mode route rather than the
+    // plugin's default `/chai/preview`, which this starter does not serve.
+    mcpPlugin({
+      previewUrl: ({ baseUrl, slug }) =>
+        `${baseUrl}/next/preview?path=${encodeURIComponent(slug)}`,
+    }),
   ],
   ai: {
     providers: process.env.OPENROUTER_API_KEY ? [openRouterProvider] : undefined,
