@@ -1,7 +1,22 @@
+import { registerCustomBlocks } from '@/blocks'
 import { getChaiBuilder } from '@/chaibuilder.server'
 import { createChaiMcpRouteHandlers } from 'chaipro/mcp'
+import { loadWebBlocks } from 'chaipro/web-blocks'
 
 type ChaiMcpRouteOptions = Parameters<typeof createChaiMcpRouteHandlers>[0]
+
+// The block tools convert blocks to and from HTML, which needs the full block
+// registry — the same registration the editor and public renderer do at module
+// load. A route handler is its own module graph, so without this the registry is
+// empty here and add_custom_block/web-block HTML can't resolve any block type.
+loadWebBlocks()
+registerCustomBlocks()
+
+// Publishing a large page, generating a layout or translating a page can run
+// longer than a platform's default function timeout; the block tools are CPU-bound.
+export const maxDuration = 300
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
 /**
  * ChaiBuilder MCP (Model Context Protocol) endpoint.
