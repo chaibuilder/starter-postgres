@@ -14,6 +14,7 @@ import {
 } from 'chaipro/payload'
 import { aiPlugin } from 'chaipro/plugins/ai-pro/server'
 import { animationPlugin } from 'chaipro/plugins/animation/server'
+import { mcpPlugin } from 'chaipro/plugins/mcp/server'
 import { redirectsPlugin } from 'chaipro/plugins/redirects/server'
 import { revisionsPlugin } from 'chaipro/plugins/revisions/server'
 import { trashPlugin } from 'chaipro/plugins/trash/server'
@@ -123,6 +124,15 @@ const chaiConfig: Readonly<ResolvedChaiBuilderServerConfig> = buildChaiBuilderCo
     aiPlugin(),
     revisionsPlugin({ drafts: true, maxRevisions: 10 }),
     animationPlugin(),
+    // Exposes ChaiBuilder's built-in MCP tools (page, block, SEO, publishing,
+    // revision, translation, asset and redirect operations) to AI agents. It does
+    // nothing until the `/api/mcp` route is mounted. See src/app/(payload)/api/mcp.
+    // Preview links go through this app's own draft-mode route rather than the
+    // plugin's default `/chai/preview`, which this starter does not serve.
+    mcpPlugin({
+      previewUrl: ({ baseUrl, slug }) =>
+        `${baseUrl}/next/preview?path=${encodeURIComponent(slug)}`,
+    }),
   ],
   ai: {
     providers: process.env.OPENROUTER_API_KEY ? [openRouterProvider] : undefined,
